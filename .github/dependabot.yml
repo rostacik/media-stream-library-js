@@ -7,11 +7,13 @@ updates:
       dev-dependencies:
         dependency-type: 'development'
         update-types:
+          - 'major'
           - 'minor'
           - 'patch'
       dependencies:
         dependency-type: 'production'
         update-types:
+          - 'major'
           - 'minor'
           - 'patch'
     rebase-strategy: 'disabled'
