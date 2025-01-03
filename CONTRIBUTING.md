@@ -50,6 +50,16 @@ you can run locally via this library.
 Run `just run [workspace]` to build the library, run a local RTSP test server, and serve
 the examples. You'll see a link to a port on `localhost` (usually 8080).
 
+### Windows-specific development setup
+
+To set up the development environment on Windows, follow these steps:
+
+1. Ensure you have [Node.js](https://nodejs.org/) and [yarn](https://v3.yarnpkg.com/) installed.
+2. Install [just](https://just.systems/) using prebuilt binaries or yarn.
+3. Open a command prompt or PowerShell window.
+4. Navigate to the project directory.
+5. Run `just build-windows` to build the project.
+
 ## Creating PRs
 
 Whenever you want to apply your changes to the upstream repository,

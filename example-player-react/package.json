@@ -9,5 +9,8 @@
     "react-dom": "18.3.1",
     "styled-components": "5.3.11",
     "vite": "5.4.0"
+  },
+  "scripts": {
+    "build-windows": "vite build"
   }
 }
