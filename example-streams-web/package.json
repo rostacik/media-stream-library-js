@@ -3,5 +3,8 @@
   "private": true,
   "devDependencies": {
     "media-stream-library": "workspace:^"
+  },
+  "scripts": {
+    "build-windows": "vite build"
   }
 }

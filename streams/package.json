@@ -69,5 +69,8 @@
     "stream-browserify": "3.0.0",
     "typescript": "5.5.4",
     "uvu": "0.5.6"
+  },
+  "scripts": {
+    "build-windows": "vite build"
   }
 }

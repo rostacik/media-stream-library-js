@@ -47,5 +47,8 @@
     "semver": "7.6.3",
     "styled-components": "5.3.11",
     "typescript": "5.5.4"
+  },
+  "scripts": {
+    "build-windows": "vite build"
   }
 }

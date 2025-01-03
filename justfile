@@ -13,6 +13,9 @@ biome *args:
 # build all packages
 build: _build-streams _build-player _build-overlay
 
+# build all packages for Windows
+build-windows: _build-streams-windows _build-player-windows _build-overlay-windows
+
 # list changed files since branched off from origin/main
 @changed:
     git diff --diff-filter=d --name-only $(git merge-base --fork-point origin/main)
@@ -138,10 +141,19 @@ uvu path pattern='.*\.test\.tsx?':
 _build-streams: (tsc "streams")
     just esbuild streams
 
+_build-streams-windows: (tsc "streams")
+    just esbuild streams
+
 _build-player: _build-streams (tsc "player")
     just esbuild player
 
+_build-player-windows: _build-streams-windows (tsc "player")
+    just esbuild player
+
 _build-overlay: (tsc "overlay")
+    just esbuild overlay
+
+_build-overlay-windows: (tsc "overlay")
     just esbuild overlay
 
 _copy-player-bundle dst:
