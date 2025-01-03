@@ -18,3 +18,9 @@
 ### 🐛 Bug fixes
 
   - replace .mjs with .js extension for browser modules (#887) ([4a67ac8](https://github.com/AxisCommunications/media-stream-library-js/commit/4a67ac8e6ae38a435076a72f7882297da1757a3d))
+
+## [13.1.2](https://github.com/AxisCommunications/media-stream-library-js/compare/4a67ac8e6ae38a435076a72f7882297da1757a3d..5b8e8e6e6ae38a435076a72f7882297da1757a3d) (2024-01-13T14:24:26.686Z)
+
+### 🚧 Maintenance
+
+  - **deps**: update all npm packages to their latest versions ([5b8e8e6](https://github.com/AxisCommunications/media-stream-library-js/commit/5b8e8e6e6ae38a435076a72f7882297da1757a3d))

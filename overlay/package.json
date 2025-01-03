@@ -28,11 +28,11 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@juggle/resize-observer": "^3.3.1",
-    "pepjs": ">= 0.4.3 < 1",
-    "react": "^17.0.1 || ^18.0.0",
-    "react-dom": "^17.0.1 || ^18.0.0",
-    "styled-components": "^5.3.5"
+    "@juggle/resize-observer": "^3.4.0",
+    "pepjs": ">= 0.5.3 < 1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "styled-components": "^5.3.11"
   },
   "devDependencies": {
     "@juggle/resize-observer": "3.4.0",
