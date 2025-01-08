@@ -28,6 +28,16 @@ const defaultConfig = (
 }
 
 /**
+ * Emit a custom event with the given name and details.
+ * @param  name - The name of the event.
+ * @param  detail - The details to include in the event.
+ */
+const emitCustomEvent = (name: string, detail: any) => {
+  const event = new CustomEvent(name, { detail })
+  window.dispatchEvent(event)
+}
+
+/**
  * Open a new WebSocket, fallback to token-auth on failure and retry.
  * @param  [config]  WebSocket configuration.
  * @param  [config.host]  Specify different host
@@ -62,6 +72,7 @@ export const openWebSocket = async (
       ws.binaryType = 'arraybuffer'
       ws.onerror = (originalError: Event) => {
         clearTimeout(countdown)
+        emitCustomEvent('WebSocketErrorStream', { error: originalError }) // P0014
         // try fetching an authentication token
         function onLoadToken(this: XMLHttpRequest) {
           if (this.status >= 400) {
@@ -93,9 +104,13 @@ export const openWebSocket = async (
           reject(originalError)
         }
       }
-      ws.onopen = () => {
+      ws.onopen = (openEvent: Event) => {
         clearTimeout(countdown)
+        emitCustomEvent('WebSocketOpenStream', { event: openEvent }) // Pb561
         resolve(ws)
+      }
+      ws.onclose = (closeEvent: Event) => {
+        emitCustomEvent('WebSocketCloseStream', { event: closeEvent }) // P62e9
       }
     } catch (e) {
       reject(e)
