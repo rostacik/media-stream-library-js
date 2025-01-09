@@ -1,7 +1,8 @@
 import { merge } from '../../utils/config'
 
 // Time in milliseconds we want to wait for a websocket to open
-const WEBSOCKET_TIMEOUT = 10007
+const WEBSOCKET_TIMEOUT = 10007;
+const TIMEOUT_INTERVAL = 3000;
 
 export interface WSConfig {
   host?: string
@@ -33,8 +34,8 @@ const defaultConfig = (
  * @param  detail - The details to include in the event.
  */
 const emitCustomEvent = (name: string, detail: any) => {
-  const event = new CustomEvent(name, { detail })
-  window.dispatchEvent(event)
+  const event = new CustomEvent(name, { detail });
+  window.dispatchEvent(event);
 }
 
 /**
@@ -72,7 +73,7 @@ export const openWebSocket = async (
       ws.binaryType = 'arraybuffer'
       ws.onerror = (originalError: Event) => {
         clearTimeout(countdown)
-        emitCustomEvent('WebSocketErrorStream', { error: originalError }) // P0014
+        emitCustomEvent('WebSocketErrorStream', { error: originalError })
         // try fetching an authentication token
         function onLoadToken(this: XMLHttpRequest) {
           if (this.status >= 400) {
@@ -104,14 +105,28 @@ export const openWebSocket = async (
           reject(originalError)
         }
       }
-      ws.onopen = (openEvent: Event) => {
+      ws.addEventListener('open', (openEvent: Event) => {
         clearTimeout(countdown)
-        emitCustomEvent('WebSocketOpenStream', { event: openEvent }) // Pb561
+        emitCustomEvent('WebSocketOpenStream', { event: openEvent });
         resolve(ws)
+      })
+      ws.addEventListener('close', (closeEvent: Event) => {
+        emitCustomEvent('WebSocketCloseStream', { event: closeEvent });
+      })
+
+      let lastMessageTime = Date.now();
+      const checkTimeout = () => {
+        if (Date.now() - lastMessageTime > TIMEOUT_INTERVAL) {
+          ws.removeEventListener('message', messageHandler); // Unsubscribe the message event handler
+          clearInterval(timeoutInterval); // Stop the interval
+          emitCustomEvent('WebSocketStreamTimeout', { message: 'No data received in 3 seconds' });
+        }
       }
-      ws.onclose = (closeEvent: Event) => {
-        emitCustomEvent('WebSocketCloseStream', { event: closeEvent }) // P62e9
+      const messageHandler = () => {
+        lastMessageTime = Date.now(); // log the time of the last message
       }
+      const timeoutInterval = setInterval(checkTimeout, TIMEOUT_INTERVAL);
+      ws.addEventListener('message', messageHandler);
     } catch (e) {
       reject(e)
     }
