@@ -1,11 +1,22 @@
 // Time in milliseconds we want to wait for a websocket to open
 const WEBSOCKET_TIMEOUT = 10007
+// Time in milliseconds to send JS event when no data flows through the websocket
+const TIMEOUT_INTERVAL = 3000
 
 export interface WebSocketConfig {
   uri: string
   tokenUri?: string
   protocol?: string
   timeout?: number
+}
+
+/**
+ * Emit a custom event with the given name and details.
+ * @param  name - The name of the event.
+ * @param  detail - The details to include in the event.
+ */
+const emitCustomEvent = (name: string, detail: any) => {
+  window.dispatchEvent(new CustomEvent(name, { detail }))
 }
 
 /**
@@ -34,6 +45,7 @@ export const openWebSocket = async ({
       ws.binaryType = 'arraybuffer'
       ws.onerror = (originalError: Event) => {
         clearTimeout(countdown)
+        emitCustomEvent('AxisMediaStreamLibrary:WebSocketErrorStream', { error: originalError })
         if (!tokenUri) {
           console.warn(
             'websocket open failed and no token URI specified, quiting'
@@ -71,10 +83,29 @@ export const openWebSocket = async ({
           reject(originalError)
         }
       }
-      ws.onopen = () => {
+      ws.onopen = (openEvent: Event) => {
         clearTimeout(countdown)
+        emitCustomEvent('AxisMediaStreamLibrary:WebSocketOpenStream', { event: openEvent })
         resolve(ws)
       }
+      ws.addEventListener('close', (closeEvent: Event) => {
+        emitCustomEvent('AxisMediaStreamLibrary:WebSocketCloseStream', { event: closeEvent })
+      })
+
+      let lastMessageTime = Date.now()
+      const checkTimeout = () => {
+        if (Date.now() - lastMessageTime > TIMEOUT_INTERVAL) {
+          ws.removeEventListener('message', messageHandler) // Unsubscribe the message event handler
+          clearInterval(timeoutInterval) // Stop the interval
+          emitCustomEvent('AxisMediaStreamLibrary:WebSocketStreamTimeout', { message: 'No data received in 3 seconds' })
+        }
+      }
+      const timeoutInterval = setInterval(checkTimeout, TIMEOUT_INTERVAL)
+
+      const messageHandler = () => {
+        lastMessageTime = Date.now() // log the time of the last message received
+      }
+      ws.addEventListener('message', messageHandler)
     } catch (e) {
       reject(e)
     }
